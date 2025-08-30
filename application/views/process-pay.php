@@ -65,13 +65,13 @@ fclose($logFile);
 $EncData=$utility->encrypt($dataToPostToPG, $EncKey);
 ?>
 <!-- Submit the data to sale api -->
-<form action="<?php echo $gatewayURL;?>" method="post" name="server_request" id="sales-api-form" target="_top" >
-  <input type="hidden" name="EncData" id="EncData" value="<?php echo  $EncData; ?>">
-  <input type="hidden" name="MerchantId" id="MerchantId" value="<?php echo $data['MerchantId']; ?>" />
-  <input type="hidden" name="BankId" id="BankId" value="<?php echo $data['BankId']; ?>" />
-  <input type="hidden" name="TerminalId" id="TerminalId" value="<?php echo $data['TerminalId']; ?>">
-  <input type="hidden" name="Version" id="Version" value="<?php echo $data['Version']; ?>">
+<form action="<?php echo $gatewayURL;?>" method="post" name="server_request" id="sales-api-form" target="_top">
+    <input type="hidden" name="EncData" id="EncData" value="<?php echo  $EncData; ?>">
+    <input type="hidden" name="MerchantId" id="MerchantId" value="<?php echo $data['MerchantId']; ?>" />
+    <input type="hidden" name="BankId" id="BankId" value="<?php echo $data['BankId']; ?>" />
+    <input type="hidden" name="TerminalId" id="TerminalId" value="<?php echo $data['TerminalId']; ?>">
+    <input type="hidden" name="Version" id="Version" value="<?php echo $data['Version']; ?>">
 </form>
 <script type="text/javascript">
-  document.server_request.submit(); 
+document.server_request.submit();
 </script>

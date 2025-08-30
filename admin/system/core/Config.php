@@ -82,65 +82,39 @@ class CI_Config {
 	 * @return	void
 	 */
 	// --------------server url setup
-	// public function __construct()
-	// {
-	// 	$this->config =& get_config();
-
-	// 	// Set the base_url automatically if none was provided
-	// 	if (empty($this->config['base_url']))
-	// 	{
-	// 		if (isset($_SERVER['SERVER_ADDR']))
-	// 		{
-	// 			if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE)
-	// 			{
-	// 				$server_addr = '['.$_SERVER['SERVER_ADDR'].']';
-	// 			}
-	// 			else
-	// 			{
-	// 				$server_addr = $_SERVER['SERVER_ADDR'];
-	// 			}
-
-	// 			$base_url = (is_https() ? 'https' : 'http').'://'.$server_addr
-	// 				.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
-	// 		}
-	// 		else
-	// 		{
-	// 			$base_url = 'http://localhost/';
-	// 		}
-
-	// 		$this->set_item('base_url', $base_url);
-	// 	}
-
-	// 	log_message('info', 'Config Class Initialized');
-	// }
-
-	// ----local url setup
 	public function __construct()
-{
-    $this->config =& get_config();
+	{
+		$this->config =& get_config();
 
-    // Agar base_url manually set nahi hai
-    if (empty($this->config['base_url']))
-    {
-        // Localhost ya server detect
-		
-        if (isset($_SERVER['HTTP_HOST']))
-        {
-            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+		// Set the base_url automatically if none was provided
+		if (empty($this->config['base_url']))
+		{
+			if (isset($_SERVER['SERVER_ADDR']))
+			{
+				if (strpos($_SERVER['SERVER_ADDR'], ':') !== FALSE)
+				{
+					$server_addr = '['.$_SERVER['SERVER_ADDR'].']';
+				}
+				else
+				{
+					$server_addr = $_SERVER['SERVER_ADDR'];
+				}
 
-            $this->set_item('base_url', $protocol . '://' . $_SERVER['HTTP_HOST'] . '/payment/');
+				$base_url = (is_https() ? 'https' : 'http').'://'.$server_addr
+					.substr($_SERVER['SCRIPT_NAME'], 0, strpos($_SERVER['SCRIPT_NAME'], basename($_SERVER['SCRIPT_FILENAME'])));
+			}
+			else
+			{
+				$base_url = 'http://localhost/';
+			}
 
-        }
-        else
-        {
-            // Default fallback
-           $this->set_item('base_url', 'http://localhost/payment/');
+			$this->set_item('base_url', $base_url);
+		}
 
-        }
-    }
+		log_message('info', 'Config Class Initialized');
+	}
 
-    log_message('info', 'Config Class Initialized with base_url: '.$this->config['base_url']);
-}
+	
 
 
 

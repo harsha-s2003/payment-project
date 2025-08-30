@@ -1,0 +1,14 @@
+Request:[30-08-2025 13:59:43]["SecureHash||5b6644c3d205f56828ed1f715e74220a7064e9d6e7eaa8d0f970b49fdcacc78f","Amount||10000","BankId||24520","Currency||356","MCC||8641","MerchantId||100000000005859","OrderInfo||","PassCode||ABCD1234","Pay_Now||","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TerminalId||EG000488","TxnRefNo||ADCC11395","TxnType||Pay","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:22:03]["SecureHash||d339c05629aa80e4cbbeb1b1ba0bf09a57e3c2e946be63d23b27cf7e4b23a432","Amount||10000","BankId||24520","Currency||356","MCC||8641","MerchantId||317159","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TerminalId||TEST_TERM","TxnRefNo||ADCC55779","TxnType||Pay","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:30:35]["SecureHash||96451e918f81e92154b092acc90c5dc7a6ca76e5542f65c7b60403afcbfba02e","Amount||200","BankId||24520","Currency||356","MCC||8641","MerchantId||317159","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TerminalId||TEST_TERM","TxnRefNo||ADCC66948","TxnType||Pay","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:32:33]["SecureHash||8b63a1b136193fa586b7b9966195c7670cbd00898db97bde9a8f94e8f0c58e20","Amount||1000","BankId||24520","Currency||356","MCC||8641","MerchantId||317159","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TerminalId||TEST_TERM","TxnRefNo||ADCC36471","TxnType||Pay","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:39:11]["SecureHash||09938636c7dcec7d0e3c5235aa06565f0b8d51b3b098ebbd38d4e9ef7695f2b4","Amount||1000","BankId||24520","Currency||356","MCC||8641","MerchantId||317159","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TerminalId||TEST_TERM","TxnRefNo||ADCC31482","TxnType||Pay","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:40:16]["SecureHash||5aae66632161f479804aee325e41109016f8815540c97e60d1ff8149c4e445c0","Amount||1000","BankId||24520","MCC||8641","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TxnRefNo||ADCC29029","Version||1","program||JUNIOR-COLLEGE"]
+
+Request:[30-08-2025 14:40:39]["SecureHash||c9dac183b8bfa6a3ae628de942b8d1c6ee544a517582bb942bc938a509b20335","Amount||1000","BankId||24520","MCC||8641","OrderInfo||Test Transaction","PassCode||ABCD1234","Phone||9172271207","ReturnURL||http:\/\/localhost\/epay\/response","TxnRefNo||ADCC92858","Version||1","program||JUNIOR-COLLEGE"]
+

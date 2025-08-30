@@ -47,7 +47,6 @@
             </select>
             
           </div> -->
-                    <!-- Program Multi Select Dropdown -->
                     <div class="mb-3">
                         <div class="dropdown">
                             <button class="btn btn-default dropdown-toggle form-control" type="button"
@@ -58,15 +57,6 @@
                             <ul class="dropdown-menu SelectProgram form-control text-center"
                                 aria-labelledby="multiSelectDropdown">
 
-                                <?php foreach($getProgram as $programRow) { ?>
-                                <li>
-                                    <label>
-                                        <input type="checkbox" name="program_name[]"
-                                            value="<?= $programRow->program_name; ?>">
-                                        <?= $programRow->program_name; ?>
-                                    </label>
-                                </li>
-                                <?php } ?>
 
                             </ul>
                         </div>
@@ -91,38 +81,60 @@
         </div>
     </div>
 </section>
-<script>
-// Ajax call for programs
+<script type="text/javascript">
 function getProgram(clid) {
-    $.ajax({
+    var datastring = {
+        class: clid
+    }
+    var saveData = $.ajax({
         type: 'POST',
         url: "<?= site_url('getProgramData');?>",
-        data: {
-            class: clid
-        },
+        data: datastring,
+        dataType: "text",
         success: function(resultData) {
-            $(".SelectProgram").empty().append(resultData);
+            $(".SelectProgram").empty();
+            //alert(resultData); return false;
+            $(".SelectProgram").append(resultData);
         }
     });
+
+}
+</script>
+
+<script>
+const chBoxes =
+    document.querySelectorAll('.dropdown-menu input[type="checkbox"]');
+const dpBtn =
+    document.getElementById('multiSelectDropdown');
+let mySelectedListItems = [];
+
+function handleCB() {
+    mySelectedListItems = [];
+    let mySelectedListItemsText = '';
+
+    chBoxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            mySelectedListItems.push(checkbox.value);
+            mySelectedListItemsText += checkbox.value + ', ';
+        }
+    });
+
+    dpBtn.innerText =
+        mySelectedListItems.length > 0 ?
+        mySelectedListItemsText.slice(0, -2) : 'Select';
 }
 
-// Dropdown button text update
-$(document).on("change", ".SelectProgram input[type=checkbox]", function() {
-    let selected = [];
-    $(".SelectProgram input[type=checkbox]:checked").each(function() {
-        selected.push($(this).val());
-    });
-    $("#multiSelectDropdown").text(selected.length > 0 ? selected.join(", ") : "Select Program");
+chBoxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', handleCB);
 });
-
-// Validation
+</script>
+<script type="text/javascript">
 function getPrg() {
     var name = $('#name').val();
     var contact = $('#contact').val();
     var schoolname = $('#schoolname').val();
     var Integrated = $('#Integrated').val();
-    var selectedPrograms = $(".SelectProgram input[type=checkbox]:checked");
-
+    var geproc = $('#geproc').is(":checked")
     if (name == "") {
         alert('please enter name');
         return false;
@@ -139,11 +151,10 @@ function getPrg() {
         alert('please Select class');
         return false;
     }
-    if (selectedPrograms.length === 0) {
+    if (geproc == false) {
         alert('please Select Program');
         return false;
     }
 
-    return true; // ✅ sab sahi hai, form submit hoga
 }
 </script>
