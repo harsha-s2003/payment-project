@@ -59,9 +59,26 @@ $default_controller = 'Welcome';
 $route['default_controller'] = "$default_controller";
 $route['translate_uri_dashes'] = TRUE;
 
+
+// ✅ Form submit hoga ispe (OrderPay controller ka pay() method)
+$route['order-pay'] = 'OrderPay/pay';
+
+// ✅ Payment gateway se callback/response yaha aayega
+$route['payment-response'] = 'OrderPay/callback';
+
 // here I have removed controller name from URL
-$controller_exceptions = array("save-form-data","getInstructionData","online-payment","payment-history","print-invoice","view-history","search-employee","payment-online-booking","payment-response","payment-history-user","login","register",
-  "student-fees","save-registration-data","student-login","getProgramData","otp-verify","otp-verification","dashboard","logout","order-pay","response","resstatus","about-us","contact-us","privacy-policy","cancalation-refund-policy","shiping-delivery-policy","term-condition","payment-history","payment-invoice"); // here signup is controller function name. You can add as many as controller function names.
+// $controller_exceptions = array("save-form-data","getInstructionData","online-payment","payment-history","print-invoice","view-history","search-employee","payment-online-booking","payment-response","payment-history-user","login","register",
+//   "student-fees","save-registration-data","student-login","getProgramData","otp-verify","otp-verification","dashboard","logout","order-pay","response","resstatus","about-us","contact-us","privacy-policy","cancalation-refund-policy","shiping-delivery-policy","term-condition","payment-history","payment-invoice"); // here signup is controller function name. You can add as many as controller function names.
+
+
+$controller_exceptions = array(
+  "save-form-data","getInstructionData","online-payment","payment-history","print-invoice","view-history","search-employee",
+  "payment-online-booking","payment-history-user","login","register","student-fees","save-registration-data",
+  "student-login","getProgramData","otp-verify","otp-verification","dashboard","logout",
+  "response","resstatus","about-us","contact-us","privacy-policy","cancalation-refund-policy",
+  "shiping-delivery-policy","term-condition","payment-history","payment-invoice"
+);
+
 
 foreach($controller_exceptions as $v) {
   $route[$v] = "$default_controller/".$v;

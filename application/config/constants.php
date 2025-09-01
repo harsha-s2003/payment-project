@@ -83,3 +83,13 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+
+
+// Encryption Keys
+define('ENC_REQ_KEY', 'A4476C2062FFA58980DC8F79EB6A799E');  // UAT key
+define('ENC_RES_KEY', '75AEF0FA1B94B3C10D4F5B268F757F11');   // UAT key
+
+// Hash Keys
+define('REQ_HASH_KEY', 'KEY123657234');
+define('RESP_HASH_KEY', 'KEYRESP123657234');

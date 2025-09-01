@@ -22,30 +22,28 @@
 
 
 
+// ✅ Encryption / Security Keys (Testing Docs me diye gaye hote hain)
+define('ENC_KEY', '58BE879B7DD635698764745511C704AB');  // 32-char Encryption Key
+define('SECURE_SECRET', '7813E3E593548B096675AC27FE2C850'); // SHA-256 Secret
 
-/* Enter NDPS UAT kit parameters */
 
-// ✅ Test Keys (docs se lo, neeche example placeholder hai)
-define('ENC_KEY', 'Your_Test_EncKey_Here'); 
-define('SECURE_SECRET', 'Your_Test_SecureSecret_Here'); 
 
-// ✅ API Version
-define('VERSION', '1'); 
-define('PASSCODE', '12345678'); // Must be 8 digits only, no special chars
+// ✅ Version
+define('VERSION', '1');
 
-// ✅ NDPS Merchant Details
-define('MERCHANTID', '317159');    // NDPS Test MerchantId (given in docs)
-define('TERMINALID', 'TEST_TERM'); // NDPS Test TerminalId (if not given, keep blank)
-define('BANKID', '24520');         // Keep same if NDPS docs mention
-define('MCC', '8641');             // Standard Merchant Category Code
+// ✅ Merchant Details
+define('MERCHANT_ID', '317159');       // NDPS Test Merchant ID
+define('TERMINAL_ID', 'TEST_TERM');    // NDPS Test Terminal ID
+define('PASSWORD', 'Test@123');        // NDPS Test Password
+define('CURRENCY', '356');             // INR numeric ISO code
 
 // ✅ NDPS UAT URLs
-define('GATEWAYURL', 'https://pgtest.atomtech.in/paynetz/epi/fts');     // Transaction Init
-define('REFUNDURL',  'https://pgtest.atomtech.in/paynetz/epi/refund');  // Refund
-define('STATUSURL',  'https://pgtest.atomtech.in/paynetz/epi/status');  // Txn Status
+define('GATEWAY_URL', 'https://pgtest.atomtech.in/paynetz/epi/fts');   // Transaction Initiation
+define('REFUND_URL',  'https://pgtest.atomtech.in/paynetz/epi/refund'); // Refund
+define('STATUS_URL',  'https://pgtest.atomtech.in/paynetz/epi/status'); // Status Check
+define('CALLBACK_URL','http://localhost/payment/orderpay/callback');   // Callback / Return URL
 
-// ✅ Return / Callback URL (your domain)
-define('RETURNURL', 'http://localhost/epay/response.php'); 
-// ⚠️ Important: Update this with your live domain callback file when going live
+
+
 
 ?>

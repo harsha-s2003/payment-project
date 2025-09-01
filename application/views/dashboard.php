@@ -95,67 +95,61 @@ $TxnRefNo = $ranNo;
                                             <hr>
                                             <!-- <p class="mt-2 fw-semibold mb-0">₹ 2000  <span class=""> + GST ₹ 180</span></p> -->
                                             <div class="ftotal"></div>
+                                            <!-- <form method="POST" action="<?= site_url('orderpay/pay');?>">
 
-                                            <!-- <form method="POST" action="<?= site_url('order-pay');?>">
-                                                <input class="textbox" type="hidden" name="TxnRefNo" id="TxnRefNo"
-                                                    value="<?= $TxnRefNo;?>" required />
-                                                <input type="text" name="Amount" id="Amount" value=""
-                                                    pattern="[1-9]\d*(\.\d+)?"
-                                                    title="Please enter a number greater than or equal to 1" size="40"
-                                                    maxlength="12" required class="form-control col-md-3"
-                                                    placeholder="Enter Amount" style="width:250px;" />
 
-                                                <input class="textbox" type="hidden" name="Currency" id="Currency"
-                                                    value="356" size="50" maxlength="40" required />
-                                                <input class="textbox" type="hidden" name="MerchantId" id="MerchantId"
-                                                    value="100000000005859" required />
-                                                <input class="textbox" type="hidden" name="TerminalId" id="TerminalId"
-                                                    value="EG000488" required />
-                                                <input class="textbox" type="hidden" name="TxnType" id="TxnType"
-                                                    value="Pay" readonly="readonly" required />
-                                                <input class="textbox" type="hidden" name="OrderInfo" id="OrderInfo" />
-
-                                                <input class="textbox" type="hidden" name="Phone" id="Phone"
-                                                    value="<?= $studentfeeD->mobile?>" size="10"
-                                                    placeholder="1234567890" pattern="[0-9]{10}" maxlength="10" />
-                                                <hr>
-                                                <div class=""><button type="submit" name="Pay Now"
-                                                        class="btn btn-success">Pay Now</button></div>
-                                            </form> -->
-
-                                            <form method="POST" action="<?= site_url('order-pay');?>">
-                                                <!-- Unique transaction reference -->
                                                 <input type="hidden" name="TxnRefNo" value="<?= $TxnRefNo;?>"
                                                     required />
 
-                                                <!-- Amount -->
+
                                                 <input type="text" name="Amount" required placeholder="Enter Amount"
                                                     style="width:250px;" />
 
-                                                <!-- Optional info -->
-                                                <input type="hidden" name="OrderInfo" value="Test Transaction" />
-                                                <input type="hidden" name="Phone" value="<?= $studentfeeD->mobile?>" />
 
-                                                <hr>
-                                                <div>
-                                                    <button type="submit" class="btn btn-success">Pay Now
-                                                        (Test)</button>
-                                                </div>
+                                                <input type="hidden" name="OrderInfo" value="Test Transaction" />
+                                                <input type="hidden" name="Phone" value="<?= $studentfeeD->mobile?>" 
+
+                                            <hr>
+                                            <div>
+                                                <button type="submit" class="btn btn-success">Pay Now
+                                                    (Test)</button>
+                                            </div>
+                                    </form> -->
+
+                                            <form method="POST" action="<?= site_url('order-pay'); ?>">
+                                                <input type="hidden" id="atomToken" value="<?= $tokenId; ?>" /> <input
+                                                    type="text" name="amount" required placeholder="Enter Amount"
+                                                    style="width:250px;" /> <button type="submit" id="payBtn"
+                                                    class="btn btn-success">Pay Now</button>
                                             </form>
 
 
 
+                                            <!-- Payment Button -->
+
+                                            <!-- Mandatory JS CDN for UAT -->
+                                            <script src="https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js">
+                                            </script>
+
+                                            <script>
+                                            // Button click pe payment function call
+                                            document.getElementById("payBtn").addEventListener("click", function() {
+                                                const options = {
+                                                    atomTokenId: "15000008670129", // ye tumhare UAT token
+                                                    merchId: "YOUR_MERCHANT_ID", // AtomTech se mila hua
+                                                    custEmail: "customer@example.com",
+                                                    custMobile: "9999999999",
+                                                    returnUrl: "https://yourwebsite.com/callback" // payment response receive karne ke liye
+                                                };
+
+                                                // UAT environment me payment popup open
+                                                new AtomPaynetz(options, 'uat');
+                                            });
+                                            </script>
+
                                         </td>
                                 </tr>
-
-
                             </table>
-
-
-                            <!-- <a href="invoice.html" class="btn btn-success no-print ">Pay Now</a> -->
-                            <!-- <div class="mt-3  no-print">
-                  <button class=" btn btn-outline-primary" onclick="window.print();">Dowload Receipt</button>
-                </div> -->
                         </div>
 
                 </div>
@@ -164,25 +158,6 @@ $TxnRefNo = $ranNo;
     </div>
 </section>
 <script type="text/javascript">
-/* function getFeeAmt() {
-       var count = 0;
-    var table_abc = document.getElementsByClassName("checkbox1");
-    for (var i = 0; table_abc[i]; ++i) {
-
-        if (table_abc[i].checked) {
-            var value = table_abc[i].value;
-            count += Number(table_abc[i].value);
-        }
-    }
-var tpp = '<p class="mt-2 fs-4  fw-semibold">₹ '+count+'</p> ';
-var taamt = '<input class="textbox"type="text"  name="Amount" id="Amount" value='+count+' pattern="[1-9]\d*(\.\d+)?" title="Please enter a number greater than or equal to 1" size="40" maxlength="12" required />';   
-$(".ftotal").empty();
-$(".tammtp").empty();    
-$(".tammtp").append(taamt);
-$(".ftotal").append(tpp);*/
-//alert(count);
-//}  
-
 (function() {
     window.onpageshow = function(event) {
         if (event.persisted) {
