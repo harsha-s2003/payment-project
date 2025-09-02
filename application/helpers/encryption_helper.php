@@ -1,17 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-function encryptAES512($plainText, $key) {
-    $iv = hex2bin('000102030405060708090a0b0c0d0e0f');
-    $key = hash('sha512', $key, true); // 512-bit key
-    $cipherText = openssl_encrypt($plainText, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-    return strtoupper(bin2hex($cipherText));
+/**
+ * AES-512 Encryption (NDPS Requirement)
+ */
+if (!function_exists('encryptAES512')) {
+    function encryptAES512($plainText, $key) {
+        return bin2hex(openssl_encrypt($plainText, "AES-256-ECB", hex2bin($key), OPENSSL_RAW_DATA));
+    }
 }
 
-function decryptAES512($encryptedText, $key) {
-    $iv = hex2bin('000102030405060708090a0b0c0d0e0f');
-    $key = hash('sha512', $key, true);
-    $cipherText = hex2bin($encryptedText);
-    $plainText = openssl_decrypt($cipherText, 'AES-256-CBC', $key, OPENSSL_RAW_DATA, $iv);
-    return $plainText;
+if (!function_exists('decryptAES512')) {
+    function decryptAES512($encryptedText, $key) {
+        return openssl_decrypt(hex2bin($encryptedText), "AES-256-ECB", hex2bin($key), OPENSSL_RAW_DATA);
+    }
 }

@@ -117,33 +117,45 @@ $TxnRefNo = $ranNo;
                                     </form> -->
 
                                             <form method="POST" action="<?= site_url('order-pay'); ?>">
-                                                <input type="hidden" id="atomToken" value="<?= $tokenId; ?>" /> <input
-                                                    type="text" name="amount" required placeholder="Enter Amount"
-                                                    style="width:250px;" /> <button type="submit" id="payBtn"
-                                                    class="btn btn-success">Pay Now</button>
+                                                <!-- Hidden Token -->
+                                                <input type="hidden" id="atomToken" value="<?= $tokenId; ?>">
+
+                                                <!-- Enter Amount -->
+                                                <input type="text" name="amount" value="<?= $amount; ?>"
+                                                    style="width:250px;" />
+
+                                                <!-- Pay Now Button -->
+                                                <button type="button" id="payBtn" class="btn btn-success">Pay
+                                                    Now</button>
                                             </form>
 
 
 
                                             <!-- Payment Button -->
 
-                                            <!-- Mandatory JS CDN for UAT -->
+                                            <!-- Mandatory JS CDN -->
                                             <script src="https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js">
                                             </script>
 
                                             <script>
-                                            // Button click pe payment function call
                                             document.getElementById("payBtn").addEventListener("click", function() {
+                                                const tokenId = document.getElementById("atomToken").value;
+
+                                                if (!tokenId) {
+                                                    alert("Atom Token ID not generated!");
+                                                    return;
+                                                }
+
                                                 const options = {
-                                                    atomTokenId: "15000008670129", // ye tumhare UAT token
-                                                    merchId: "YOUR_MERCHANT_ID", // AtomTech se mila hua
-                                                    custEmail: "customer@example.com",
-                                                    custMobile: "9999999999",
-                                                    returnUrl: "https://yourwebsite.com/callback" // payment response receive karne ke liye
+                                                    atomTokenId: "15000008670129",
+                                                    merchId: "<?= MERCHANT_ID; ?>",
+                                                    custEmail: "sagar.gopale@atomtech.in",
+                                                    custMobile: "8976286911",
+                                                    returnUrl: "<?= CALLBACK_URL; ?>"
                                                 };
 
-                                                // UAT environment me payment popup open
                                                 new AtomPaynetz(options, 'uat');
+
                                             });
                                             </script>
 

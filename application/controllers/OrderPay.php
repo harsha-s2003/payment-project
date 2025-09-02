@@ -5,109 +5,102 @@ class OrderPay extends CI_Controller {
 
     public function __construct() {
         parent::__construct();
-        $this->load->helper('encryption_helper'); // Load AES helper
+        $this->load->helper('encryption'); 
+        require_once(APPPATH.'config/ndps_config.php');
     }
 
-    // Function to generate HMAC signature
-    private function generateSignature($hashKey, $params = []) {
-        $data = implode('', $params); // concat all required params
-        return hash_hmac('sha512', $data, $hashKey);
-    }
-
+    // =============================
+    // 1. Payment Initiation (AUTH API)
+    // =============================
     public function pay() {
-        // Example merchant and transaction data
-        $merchId = "317159";
-        $merchTxnId = "test000123";
-        $totalAmount = "100";
-        $respHashKey = "KEYRESP123657234"; // Replace with actual hash key
-        $atomTxnId = ""; // Initially empty
-        $txnStatusCode = ""; // Initially empty
-        $subChannel = "DC";
-        $bankTxnId = "";
+        $merchId     = MERCHANT_ID;
+        $merchTxnId  = uniqid("TXN"); // unique transaction id
+        $totalAmount = "100.00";
 
-        // Generate signature (optional, if required for response verification)
-        $params = [$merchId, $atomTxnId, $merchTxnId, $totalAmount, $txnStatusCode, $subChannel, $bankTxnId];
-        $signature = $this->generateSignature($respHashKey, $params);
-
-        // Prepare request array
         $authRequest = [
             "payInstrument" => [
                 "headDetails" => [
-                    "version" => "OTSv1.1",
-                    "api" => "AUTH",
-                    "platform" => "FLASH"
+                    "version"   => "OTSv1.1",
+                    "api"       => "AUTH",
+                    "platform"  => "FLASH"
                 ],
                 "merchDetails" => [
-                    "merchId" => $merchId,
-                    "userId" => "",
-                    "password" => "Test@123",
-                    "merchTxnId" => $merchTxnId,
-                    "merchTxnDate" => date('Y-m-d H:i:s')
+                    "merchId"     => $merchId,
+                    "password"    => PASSWORD,
+                    "merchTxnId"  => $merchTxnId,
+                    "merchTxnDate"=> date('Y-m-d H:i:s')
                 ],
                 "payDetails" => [
-                    "amount" => $totalAmount,
-                    "product" => "NSE",
-                    "custAccNo" => "5464567453453435",
+                    "amount"      => $totalAmount,
+                    "product"     => "NSE",
+                    "custAccNo"   => "5464567453453435",
                     "txnCurrency" => "INR"
                 ],
                 "custDetails" => [
-                    "custEmail" => "sagar.gopale@atomtech.in",
-                    "custMobile" => "8976286911"
-                ],
-                "extras" => [
-                    "udf1" => "One",
-                    "udf2" => "Two"
+                   "custEmail"=> "sagar.gopale@atomtech.in",
+                   "custMobile"=> "8976286911"
                 ]
-            ],
-            "payModeSpecificData" => [
-                "subChannel" => $subChannel
             ]
         ];
 
-        // Encrypt request
-        $encReqKey = "7813E3E5E93548B096675AC27FE2C850"; // Replace with actual ENC key
-        $encryptedRequest = encryptAES512(json_encode($authRequest), $encReqKey);
+        // Encrypt Request
+        $encryptedRequest = encryptAES512(json_encode($authRequest), ENC_REQ_KEY);
 
-        // Send request via cURL
-        $ch = curl_init("https://uatapi.atomtech.in/payment/initiate");
+        // CURL to AUTH API
+        $ch = curl_init(GATEWAY_URL_AUTH);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
             'merchId' => $merchId,
             'encData' => $encryptedRequest
         ]));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-       $response = curl_exec($ch);
-if ($response === false) {
-    die('Curl error: ' . curl_error($ch));
+        $response = curl_exec($ch);
+
+        if ($response === false) {
+            die('Curl error: ' . curl_error($ch));
+        }
+
+        // Response JSON
+        $respArr = json_decode($response, true);
+
+       if (isset($respArr['encData'])) {
+    $decrypted = decryptAES512($respArr['encData'], ENC_RES_KEY);
+    $finalData = json_decode($decrypted, true);
+
+    echo "<h3>Full Decrypted Response</h3><pre>";
+    print_r($finalData);
+    echo "</pre>";
+
+    $atomTokenId = $finalData['payInstrument']['atomTokenId'] ?? null;
+
+    if ($atomTokenId) {
+        echo "✅ Token ID: " . $atomTokenId;
+    } else {
+        echo "❌ Token ID not found, check error details above.";
+    }
+} else {
+    echo "Error: encData not found in response!<br>";
+    echo "Raw Response: <pre>" . htmlspecialchars($response) . "</pre>";
 }
 
-// 
-        // Parse response
-        parse_str($response, $respArr);
-        $decrypted = decryptAES512($respArr['encData'], $encReqKey);
-        $responseData = json_decode($decrypted, true);
 
-        $atomTokenId = isset($responseData['atomTokenId']) ? $responseData['atomTokenId'] : null;
+if ($atomTokenId) {
+    $data['tokenId'] = $atomTokenId;
+    $data['amount'] = $totalAmount;
+    $this->load->view('payment_form', $data);
+} else {
+    echo "❌ Token ID not found!";
+}
 
-        echo "<pre>";
-        print_r($responseData);
+    }
+
+    // =============================
+    // 2. Callback after Payment
+    // =============================
+    public function callback() {
+        $response = $this->input->post();
+        echo "<h3>Callback Response</h3><pre>";
+        print_r($response);
         echo "</pre>";
-        echo "Atom Token ID: " . $atomTokenId;
-
-// parse_str($response, $respArr);
-
-// if(isset($respArr['encData'])) {
-//     $decrypted = decryptAES512($respArr['encData'], $encReqKey);
-//     $responseData = json_decode($decrypted, true);
-//     $atomTokenId = isset($responseData['atomTokenId']) ? $responseData['atomTokenId'] : null;
-//     echo "Atom Token ID: " . $atomTokenId;
-// } else {
-//     echo "Error: encData not found in response!";
-//     echo "<pre>";
-//     print_r($respArr);
-//     echo "</pre>";
-// }
-
-
     }
 }

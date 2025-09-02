@@ -62,6 +62,7 @@ $route['translate_uri_dashes'] = TRUE;
 
 // ✅ Form submit hoga ispe (OrderPay controller ka pay() method)
 $route['order-pay'] = 'OrderPay/pay';
+$route['payment/order-pay'] = 'OrderPay/index';
 
 // ✅ Payment gateway se callback/response yaha aayega
 $route['payment-response'] = 'OrderPay/callback';
