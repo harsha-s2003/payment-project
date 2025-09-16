@@ -128,11 +128,6 @@ $TxnRefNo = $ranNo;
                                                 <button type="button" id="payBtn" class="btn btn-success">Pay
                                                     Now</button>
                                             </form>
-
-
-
-                                            <!-- Payment Button -->
-
                                             <!-- Mandatory JS CDN -->
                                             <script src="https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js">
                                             </script>
@@ -147,7 +142,7 @@ $TxnRefNo = $ranNo;
                                                 }
 
                                                 const options = {
-                                                    atomTokenId: "15000008670129",
+                                                    atomTokenId: tokenId,
                                                     merchId: "<?= MERCHANT_ID; ?>",
                                                     custEmail: "sagar.gopale@atomtech.in",
                                                     custMobile: "8976286911",
@@ -155,9 +150,9 @@ $TxnRefNo = $ranNo;
                                                 };
 
                                                 new AtomPaynetz(options, 'uat');
-
                                             });
                                             </script>
+
 
                                         </td>
                                 </tr>
