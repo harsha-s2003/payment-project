@@ -55,107 +55,64 @@ $TxnRefNo = $ranNo;
 
                                 <tr>
                                     <td>Fees </td>
-                                    <form method="POST" action="<?= site_url('order-pay');?>">
-                                        <td>
-                                            <?php foreach ($getPPData as $key => $getPPDataR) {  ?>
-                                            <?php if($getPPDataR->program_fee_type=='S') { ?>
-                                            <div>
-                                                <input id="a<?= $getPPDataR->id?>" type="radio"
-                                                    value="<?= $getPPDataR->program_name;?>" onchange="getFeeAmt();"
-                                                    class="checkbox1" name="program">
-                                                <label
-                                                    for="a"><?= $getPPDataR->program_name;?>(₹<?= $getPPDataR->program_fee;?>)</label>
-                                            </div>
-                                            <?php } ?>
-                                            <?php if($getPPDataR->program_fee_type=='I') { ?>
-                                            <div style="margin-left: 20px;">
-                                                <input type="radio" value="<?= $getPPDataR->program_name;?>"
-                                                    class="checkbox1" onchange="getFeeAmt();" name="program">
-                                                <label for="a"><?= $getPPDataR->program_name;?></label>
-                                            </div>
-                                            <div>
-                                                <!-- <input type="checkbox" value="<?= $getPPDataR->install1;?>" class="checkbox1" onchange="getFeeAmt();" name="program[]">  -->
-                                                <label for="b">First Installment(₹<?= $getPPDataR->install1;?>)</label>
+                                    <td>
+                                        <?php foreach ($getPPData as $key => $getPPDataR) {  ?>
+                                        <?php if($getPPDataR->program_fee_type=='S') { ?>
+                                        <div>
+                                            <input id="a<?= $getPPDataR->id?>" type="radio"
+                                                value="<?= $getPPDataR->program_name;?>" onchange="getFeeAmt();"
+                                                class="checkbox1" name="program">
+                                            <label for="a">
+                                                <?= $getPPDataR->program_name;?> (₹<?= $getPPDataR->program_fee;?>)
+                                            </label>
+                                        </div>
+                                        <?php } ?>
 
-                                            </div>
-                                            <div>
-                                                <!-- <input type="checkbox" value="<?= $getPPDataR->install2;?>" class="checkbox1" onchange="getFeeAmt();"> -->
-                                                <label for="c">Second installment(₹<?= $getPPDataR->install2;?>)</label>
-                                            </div>
-                                            <?php } ?>
-                                            <?php if($getPPDataR->program_fee_type=='N') { ?>
-                                            <div>
-                                                <input type="radio" value="<?= $getPPDataR->program_name;?>"
-                                                    class="checkbox1" onchange="getFeeAmt();" name="program">
-                                                <label for="a"><?= $getPPDataR->program_name;?></label>
-                                                <!-- <input  type="text" value="" onchange="getFeeAmtI();" class="form-control col-md-3" placeholder="Enter Amount" style="width:200px;"> -->
-                                            </div>
-                                            <?php } ?>
-                                            <?php } ?>
-                                            <hr>
-                                            <!-- <p class="mt-2 fw-semibold mb-0">₹ 2000  <span class=""> + GST ₹ 180</span></p> -->
-                                            <div class="ftotal"></div>
-                                            <!-- <form method="POST" action="<?= site_url('orderpay/pay');?>">
+                                        <?php if($getPPDataR->program_fee_type=='I') { ?>
+                                        <div style="margin-left: 20px;">
+                                            <input type="radio" value="<?= $getPPDataR->program_name;?>"
+                                                class="checkbox1" onchange="getFeeAmt();" name="program">
+                                            <label><?= $getPPDataR->program_name;?></label>
+                                        </div>
+                                        <div>
+                                            <label>First Installment (₹<?= $getPPDataR->install1;?>)</label>
+                                        </div>
+                                        <div>
+                                            <label>Second Installment (₹<?= $getPPDataR->install2;?>)</label>
+                                        </div>
+                                        <?php } ?>
 
+                                        <?php if($getPPDataR->program_fee_type=='N') { ?>
+                                        <div>
+                                            <input type="radio" value="<?= $getPPDataR->program_name;?>"
+                                                class="checkbox1" onchange="getFeeAmt();" name="program">
+                                            <label><?= $getPPDataR->program_name;?></label>
+                                        </div>
+                                        <?php } ?>
+                                        <?php } ?>
 
-                                                <input type="hidden" name="TxnRefNo" value="<?= $TxnRefNo;?>"
-                                                    required />
+                                        <hr>
+                                        <div class="ftotal"></div>
 
+                                        <!-- ✅ Payment Form (separate, no nesting) -->
+                                        <form id="paymentForm" method="POST">
+                                            <!-- Hidden Token -->
+                                            <input type="hidden" id="atomToken"
+                                                value="<?= isset($atomTokenId) ? $atomTokenId : ''; ?>">
 
-                                                <input type="text" name="Amount" required placeholder="Enter Amount"
-                                                    style="width:250px;" />
+                                            <!-- Amount -->
+                                            <input type="text" name="amount"
+                                                value="<?= isset($amount) ? $amount : '0.00'; ?>"
+                                                style="width:250px;" />
 
-
-                                                <input type="hidden" name="OrderInfo" value="Test Transaction" />
-                                                <input type="hidden" name="Phone" value="<?= $studentfeeD->mobile?>" 
-
-                                            <hr>
-                                            <div>
-                                                <button type="submit" class="btn btn-success">Pay Now
-                                                    (Test)</button>
-                                            </div>
-                                    </form> -->
-
-                                            <form method="POST" action="<?= site_url('order-pay'); ?>">
-                                                <!-- Hidden Token -->
-                                                <input type="hidden" id="atomToken" value="<?= $tokenId; ?>">
-
-                                                <!-- Enter Amount -->
-                                                <input type="text" name="amount" value="<?= $amount; ?>"
-                                                    style="width:250px;" />
-
-                                                <!-- Pay Now Button -->
-                                                <button type="button" id="payBtn" class="btn btn-success">Pay
-                                                    Now</button>
-                                            </form>
-                                            <!-- Mandatory JS CDN -->
-                                            <script src="https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js">
-                                            </script>
-
-                                            <script>
-                                            document.getElementById("payBtn").addEventListener("click", function() {
-                                                const tokenId = document.getElementById("atomToken").value;
-
-                                                if (!tokenId) {
-                                                    alert("Atom Token ID not generated!");
-                                                    return;
-                                                }
-
-                                                const options = {
-                                                    atomTokenId: tokenId,
-                                                    merchId: "<?= MERCHANT_ID; ?>",
-                                                    custEmail: "sagar.gopale@atomtech.in",
-                                                    custMobile: "8976286911",
-                                                    returnUrl: "<?= CALLBACK_URL; ?>"
-                                                };
-
-                                                new AtomPaynetz(options, 'uat');
-                                            });
-                                            </script>
-
-
-                                        </td>
+                                            <!-- Pay Now button -->
+                                            <a class="btn btn-success" href="javascript:openPay()" role="button">
+                                                Pay Now
+                                            </a>
+                                        </form>
+                                    </td>
                                 </tr>
+
                             </table>
                         </div>
 
@@ -172,4 +129,17 @@ $TxnRefNo = $ranNo;
         }
     };
 })();
+</script>
+<script src="https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js"></script>
+<script>
+function openPay() {
+    const options = {
+        "atomTokenId": document.getElementById("atomToken").value,
+        "merchId": "446442",
+        "custEmail": "sagar.gopale@atomtech.in",
+        "custMobile": "8976286911",
+        "returnUrl": "<?= base_url('welcome/response') ?>"
+    };
+    let atom = new AtomPaynetz(options, 'uat'); // 'uat' for testing
+}
 </script>

@@ -116,97 +116,83 @@ public function order_pay()
 		$this->load->view('process-pay');
 		$this->load->view('footer');
 	}
-	else {
-		redirect('dashboard');
-	}
+	
+
+	  $transactionId =  sprintf("%06d", mt_rand(1, 999999));
+          $payUrl = "https://caller.atomtech.in/ots/aipay/auth";
+          $amount = "50.00"; 
+         
+          $this->load->library("AtompayRequest",array(
+                    "Login" => "446442",
+                    "Password" => "Test@123",
+                    "ProductId" => "NSE",
+                    "Amount" => $amount,
+                    "TransactionCurrency" => "INR",
+                    "TransactionAmount" => $amount,
+                    "ReturnUrl" => base_url("OrderPay/confirm"),
+                    "ClientCode" => "007",
+                    "TransactionId" => $transactionId,
+                    "CustomerEmailId" => "atomdev@gmail.com",
+                    "CustomerMobile" => "8888888888",
+                    "udf1" => "Atom Dev", // optional udf1
+                    "udf2" => "Andheri Mumbai", // optional udf2
+                    "udf3" => "udf3", // optional udf3
+                    "udf4" => "udf4", // optional udf4
+                    "udf5" => "udf5", // optional udf5
+                    "CustomerAccount" => "639827",
+                    "url" => $payUrl,
+                    "RequestEncypritonKey" => "A4476C2062FFA58980DC8F79EB6A799E",
+                    "ResponseDecryptionKey" => "75AEF0FA1B94B3C10D4F5B268F757F11",
+            ));
+        
+        $data = array(
+            'atomTokenId'=>$this->atompayrequest->payNow(),
+            'transactionId'=>$transactionId,
+            'amount'=>$amount
+        );
+        
+        $this->load->view('dashboard', $data);
 }
 
 public function response()
-{	
-$utility = new Utility();
-$logFilePath = 'sale_log.log';
+{   
+    $this->load->library("AtompayResponse", array(
+        "data" => $_POST['encData'],
+        "merchId" => $_POST['merchId'],
+        "ResponseDecryptionKey" => "75AEF0FA1B94B3C10D4F5B268F757F11",
+    ));
 
-$EncKey = ENC_KEY;
-$SECURE_SECRET = SECURE_SECRET;
+    // Response decrypt karke array lo
+    $res = $this->atompayresponse->decryptResponseIntoArray();
 
-/* Get the response from url */
-$paymentResponse = $_GET['paymentResponse'];
+    $responseDetails = $res['responseDetails'];
+    $merchDetails    = $res['merchDetails'];
+    $payModeDetails  = $res['payModeSpecificData'];
 
-// URL decode the parameter
-$decodedJson = urldecode($paymentResponse);
-
-// Parse the JSON
-$jsonData 	= json_decode($decodedJson, true);
-$EncData 	= $jsonData['EncData']; 
-$merchantId = $jsonData['MerchantId'];
-$bankID  	= $jsonData['BankId'];
-$terminalId = $jsonData['TerminalId'];
-
-if($bankID == "" || $merchantId == "" || $terminalId == "" || $EncData == "")
-{
-	echo "Invalid data";
-	exit;
-}
-if(empty($bankID) || empty($merchantId) || empty($terminalId) || empty($EncData) )
-{
-	echo "Invalid data";
-	exit;
-}
-
-$fomattedEncData = str_replace(" ", "+", $EncData);
-$data = $utility->decrypt($fomattedEncData, $EncKey); 
-
-$dataArray = explode("::",$data);
-foreach ($dataArray as $key => $value) 
-{
-	$valuesplit = explode("||",$value);
-	$dataFromPostFromPG[$valuesplit[0]] = urldecode($valuesplit[1]);
+    // ICICI ke jaise hi DB me save karna
+    if ($responseDetails['statusCode'] == 'OTS0000') { // success
+        $data_Arr = array(
+            'transation_id'   => $merchDetails['merchTxnId'],
+            'bank_trans_id'   => $payModeDetails['bankDetails']['bankTxnId'],
+            'bank_remark'     => $responseDetails['statusMessage'],
+            'payment_status'  => 'Done',
+            'payment_date'    => $merchDetails['merchTxnDate'],
+        );
+        $this->Common_model->SaveData('student_fee_details', $data_Arr, "transation_id='".$merchDetails['merchTxnId']."'");
+        redirect('dashboard');
+    } else {
+        $data_Arr = array(
+            'transation_id'   => $merchDetails['merchTxnId'],
+            'bank_trans_id'   => $payModeDetails['bankDetails']['bankTxnId'],
+            'bank_remark'     => $responseDetails['statusMessage'],
+            'payment_status'  => 'Failed',
+            'payment_date'    => $merchDetails['merchTxnDate'],
+        );
+        $this->Common_model->SaveData('student_fee_details', $data_Arr, "transation_id='".$merchDetails['merchTxnId']."'");
+        redirect('dashboard');
+    }
 }
 
-/* SecureHash got in reply */
-$SecureHash = $dataFromPostFromPG['SecureHash'];
-
-/* Log the response */
-$currentTime = date('d-m-Y H:i:s'); // Get current timestamp with date and time
-$logRequest = 'Response:'."[$currentTime]"; // Include timestamp in the log message
-$logRequest .= json_encode($dataFromPostFromPG);
-$logFile = fopen($logFilePath, 'a');
-fwrite($logFile, $logRequest . PHP_EOL.PHP_EOL);
-fclose($logFile); 
-
-/* remove SecureHash from data */	
-unset($dataFromPostFromPG['SecureHash']);
-/* remove null or empty data */
-$resData = array_filter($dataFromPostFromPG);		
-
-/* sort data array */
-ksort($resData);
-
-/* convert hash to uppercase becuase gateway needs it in uppercase  */
-$SecureHash_final = strtoupper($utility->generateSecurehash($resData));
-
-$hashValidated = 'Invalid Hash';
-$hashValidated = 'CORRECT';
-
-if( $SecureHash_final == $SecureHash )
-{
-	if($resData['ResponseCode']==00)
-	{
-		$data_Arr = array('transation_id' => $resData['TxnRefNo'], 'bank_trans_id'=>$resData['RetRefNo'],'bank_remark'=>$resData['Message'],'payment_status'=>'Done','payment_date'=>$resData['RespDate'].' '.$resData['RespTime']);
-		$this->Common_model->SaveData('student_fee_details',$data_Arr,"transation_id='".$resData['TxnRefNo']."'");
-		redirect('dashboard');
-	}
-	else {
-	
-		$data_Arr = array('transation_id' => $resData['TxnRefNo'], 'bank_trans_id'=>$resData['RetRefNo'],'bank_remark'=>$resData['Message'],'payment_status'=>'Done','payment_date'=>$resData['RespDate'].' '.$resData['RespTime']);
-		$this->Common_model->SaveData('student_fee_details',$data_Arr,"transation_id='".$resData['TxnRefNo']."'");
-		redirect('dashboard');
-	}
-} else {
-	$hashValidated = 'Invalid Hash';
-	echo 'Invalid Hash';
-}
-}
 
 public function dashboard()
 {

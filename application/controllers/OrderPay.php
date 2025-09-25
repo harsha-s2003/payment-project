@@ -1,101 +1,67 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class OrderPay extends CI_Controller {
-
-    public function __construct() {
-        parent::__construct();
-        $this->load->helper('encryption'); 
-        require_once(APPPATH.'config/ndps_config.php');
+class Welcome extends CI_Controller {
+    
+    public function index()
+    {
+        
+          $transactionId =  sprintf("%06d", mt_rand(1, 999999));
+          $payUrl = "https://caller.atomtech.in/ots/aipay/auth";
+          $amount = "50.00"; 
+         
+          $this->load->library("AtompayRequest",array(
+                    "Login" => "446442",
+                    "Password" => "Test@123",
+                    "ProductId" => "NSE",
+                    "Amount" => $amount,
+                    "TransactionCurrency" => "INR",
+                    "TransactionAmount" => $amount,
+                    "ReturnUrl" => base_url("OrderPay/confirm"),
+                    "ClientCode" => "007",
+                    "TransactionId" => $transactionId,
+                    "CustomerEmailId" => "atomdev@gmail.com",
+                    "CustomerMobile" => "8888888888",
+                    "udf1" => "Atom Dev", // optional udf1
+                    "udf2" => "Andheri Mumbai", // optional udf2
+                    "udf3" => "udf3", // optional udf3
+                    "udf4" => "udf4", // optional udf4
+                    "udf5" => "udf5", // optional udf5
+                    "CustomerAccount" => "639827",
+                    "url" => $payUrl,
+                    "RequestEncypritonKey" => "A4476C2062FFA58980DC8F79EB6A799E",
+                    "ResponseDecryptionKey" => "75AEF0FA1B94B3C10D4F5B268F757F11",
+            ));
+        
+        $data = array(
+            'atomTokenId'=>$this->atompayrequest->payNow(),
+            'transactionId'=>$transactionId,
+            'amount'=>$amount
+        );
+        
+        $this->load->view('dashboard', $data);
     }
-
-    // =============================
-    // 1. Payment Initiation (AUTH API)
-    // =============================
-    public function pay() {
-    $merchId     = MERCHANT_ID;
-    $merchTxnId  = uniqid("TXN"); // unique transaction id
-    $totalAmount = "100.00";
-
-    // Build AUTH request
-    $authRequest = [
-        "payInstrument" => [
-            "headDetails" => [
-                "version"   => "OTSv1.1",
-                "api"       => "AUTH",
-                "platform"  => "FLASH"
-            ],
-            "merchDetails" => [
-                "merchId"     => $merchId,
-                "password"    => PASSWORD,
-                "merchTxnId"  => $merchTxnId,
-                "merchTxnDate"=> date('Y-m-d H:i:s')
-            ],
-            "payDetails" => [
-                "amount"      => $totalAmount,
-                "product"     => "NSE",
-                "custAccNo"   => "5464567453453435",
-                "txnCurrency" => "INR"
-            ],
-            "custDetails" => [
-                "custEmail"  => "sagar.gopale@atomtech.in",
-                "custMobile"=> "8976286911"
-            ]
-        ]
-    ];
-
-    // Encrypt request
-    $encryptedRequest = encryptAES512(json_encode($authRequest), ENC_REQ_KEY);
-
-    // CURL to AUTH API
-    $ch = curl_init(GATEWAY_URL_AUTH);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-        'merchId' => $merchId,
-        'encData' => $encryptedRequest
-    ]));
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $response = curl_exec($ch);
-
-    if ($response === false) {
-        die('Curl error: ' . curl_error($ch));
+    
+    // to get response pass below as return URL in your view
+    public function response()
+    {
+        $this->load->library("AtompayResponse",array(
+                "data" => $_POST['encData'],
+                "merchId" => $_POST['merchId'],
+                "ResponseDecryptionKey" => "75AEF0FA1B94B3C10D4F5B268F757F11",
+         ));
+//        echo "<pre>";
+//        print_r($this->atompayresponse->decryptResponseIntoArray()['responseDetails']);
+//        print_r($this->atompayresponse->decryptResponseIntoArray()['merchDetails']);
+//        print_r($this->atompayresponse->decryptResponseIntoArray()['payModeSpecificData']);
+//        exit;
+       // to get data from above arrays use below code
+        
+        echo "Transaction Result: ".$this->atompayresponse->decryptResponseIntoArray()['responseDetails']['statusCode']."<br><br>";
+        echo "Merchant Transaction Id: ".$this->atompayresponse->decryptResponseIntoArray()['merchDetails']['merchTxnId']."<br><br>";
+        echo "Transaction Date: ".$this->atompayresponse->decryptResponseIntoArray()['merchDetails']['merchTxnDate']."<br><br>";
+        echo "Bank Transaction Date: ".$this->atompayresponse->decryptResponseIntoArray()['payModeSpecificData']['bankDetails']['bankTxnId']."<br><br>";
+        
     }
-
-  
-    parse_str($response, $respArr);
-
-    if (isset($respArr['encData'])) {
-        $decrypted = decryptAES512($respArr['encData'], ENC_RES_KEY);
-        $finalData = json_decode($decrypted, true);
-
-        echo "<h3>Full Decrypted Response</h3><pre>";
-        print_r($finalData);
-        echo "</pre>";
-
-        $atomTokenId = $finalData['atomTokenId'] ?? null;
-
-        if ($atomTokenId) {
-            echo "Token ID: " . $atomTokenId;
-            $data['tokenId'] = $atomTokenId;
-            $data['amount']  = $totalAmount;
-            $this->load->view('payment_form', $data);
-        } else {
-            echo "Token ID not found in decrypted response.";
-        }
-    } else {
-        echo " encData not found in raw response!<br>";
-        echo "Raw Response: <pre>" . htmlspecialchars($response) . "</pre>";
-    }
-}
-
-
-    // =============================
-    // 2. Callback after Payment
-    // =============================
-    public function callback() {
-        $response = $this->input->post();
-        echo "<h3>Callback Response</h3><pre>";
-        print_r($response);
-        echo "</pre>";
-    }
+    
 }

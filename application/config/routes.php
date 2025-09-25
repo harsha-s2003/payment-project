@@ -60,12 +60,10 @@ $route['default_controller'] = "$default_controller";
 $route['translate_uri_dashes'] = TRUE;
 
 
-// ✅ Form submit hoga ispe (OrderPay controller ka pay() method)
-$route['order-pay'] = 'OrderPay/pay';
-$route['payment/order-pay'] = 'OrderPay/index';
 
-// ✅ Payment gateway se callback/response yaha aayega
+$route['order-pay'] = 'OrderPay/pay';
 $route['payment-response'] = 'OrderPay/callback';
+
 
 // here I have removed controller name from URL
 // $controller_exceptions = array("save-form-data","getInstructionData","online-payment","payment-history","print-invoice","view-history","search-employee","payment-online-booking","payment-response","payment-history-user","login","register",
